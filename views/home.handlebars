@@ -1,0 +1,139 @@
+<script type="text/javascript">
+
+    const handleDescriptionClick = function(thisDescription) {
+        const dialogs = document.getElementsByClassName("descriptionDialog");
+        for(let i=0; i < dialogs.length; i++) {
+            dialogs[i].close();
+        };
+        document.getElementById(thisDescription).show();
+        const descriptionButtons = document.getElementsByClassName("descriptionButton");
+        for(let i=0; i < descriptionButtons.length; i++) {
+            descriptionButtons[i].hidden="true";
+        };
+    }
+
+    const handleDescriptionClose = function() {
+        const dialogs = document.getElementsByClassName("descriptionDialog");
+        for(let i=0; i < dialogs.length; i++) {
+            dialogs[i].close();
+        };
+        const descriptionButtons = document.getElementsByClassName("descriptionButton");
+        for(let i=0; i < descriptionButtons.length; i++) {
+            descriptionButtons[i].hidden="";
+        };
+    }
+
+    const handleTaskClick = function(thisDescription) {
+        const dialogs = document.getElementsByClassName("descriptionDialog");
+        for(let i=0; i < dialogs.length; i++) {
+            if(dialogs[i].open) {
+                handleDescriptionClick(thisDescription)
+            }
+            else {
+            }
+        }
+    }
+
+    //test
+
+    function contentEditPersist(thing) {
+    document.getElementById("dialogDescriptionInput"+thing).value = 
+    document.getElementById("dialogDescription"+thing).innerHTML;
+    return true
+    }
+
+   
+
+
+</script>
+
+<h1>Today</h1>
+    {{#each todayMessages}}
+    {{#ifEquals status "uncompleted"}}
+    <ul>
+    <form action="updatetask" method="post" onchange="submit()">
+    <input type="text" name="id" value={{this.id}} hidden="true">
+    <input type="text" name="title" value="{{title}}" onclick="handleTaskClick({{this.id}})">
+    <input type="text" name="description" id="description" value="{{this.description}}" hidden="true">
+    {{#ifEquals daily "on"}}
+    <input type="checkbox" name="daily" id="daily" checked="on" hidden="true">
+    <span>***Daily***</span>
+    {{else}}
+    <input type="checkbox" name="daily" id="daily" hidden="true">
+    {{/ifEquals}}
+    <input type="date" name="duedate" id="duedate" value="{{this.duedate}}">
+    {{#ifEquals activeafter ""}}
+    <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" hidden="true">
+    {{else}}
+    <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}">
+    {{/ifEquals}}
+    </form>
+    <form action="completed" method="post"> 
+    <input type="text" name="id" value={{this.id}} hidden="true">
+    <button type="submit">Complete</button>
+    </form>
+    <button class="descriptionButton" id="descriptionButton{{this.id}}" onClick="handleDescriptionClick({{this.id}})">Description</button>
+    <dialog id="{{this.id}}" class="descriptionDialog">
+    <button onClick="handleDescriptionClose()">X</button>
+    
+    <form  action="updatedialog" method="post" onchange="submit()">
+    <h1>{{this.title}}</h1>
+    <input type="text" name="id" value={{this.id}} hidden="true">
+    <input type="text"  name="description" id="dialogDescriptionInput{{this.id}}" hidden="true">
+    <div id="dialogDescription{{this.id}}" class="dialogDescription" contenteditable onkeyup="contentEditPersist({{this.id}})" data-value="{{this.description}}"></div>
+    <button onclick="submit()">Save Changes</button>
+    </form>
+
+    </dialog>
+    </ul>
+    {{/ifEquals}}
+    {{/each}}
+
+<h1>Upcoming</h1>
+    {{#each laterMessages}}
+    {{#ifEquals status "uncompleted"}}
+    <ul>
+    <form action="updatetask" method="post" onchange="submit()">
+    <input type="text" name="id" value={{this.id}} hidden="true">
+    <input type="text" name="title" value="{{title}}">
+    <input type="text" name="description" id="description" value="{{this.description}}">
+    {{#ifEquals daily "on"}}
+    <input type="checkbox" name="daily" id="daily" checked="on">
+    {{else}}
+    <input type="checkbox" name="daily" id="daily">
+    {{/ifEquals}}
+    <input type="date" name="duedate" id="duedate" value="{{this.duedate}}">
+    <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}">
+    </form>
+
+    <form action="completed" method="post"> 
+    <input type="text" name="id" value={{this.id}} hidden="true">
+    <button type="submit">Complete</button>
+    </form>
+    </ul>
+    {{/ifEquals}}
+    {{/each}}
+
+
+<form action="message" method="post">
+    <label for="title">Title</label>
+    <input required="true" oninvalid="this.setCustomValidity('Titles are required.')" type="text" name="title" id="title">
+    <label for="description">Description</label>
+    <input type="text" name="description" id="description">
+    <label for="daily">Daily</label>
+    <input type="checkbox" name="daily" id="daily">
+    <label for="duedate">Due</label>
+    <input type="date" name="duedate" id="duedate">
+    <label for="activeafter">Active After</label>
+    <input type="time" name="activeafter" id="activeafter">
+    <button type="submit">Submit</button>
+</form>
+
+<script type="text/javascript">
+ // Render HTML in dialog description
+    const dialogDescriptions = document.getElementsByClassName("dialogDescription");
+        for (let i=0; i < dialogDescriptions.length; i++) {
+        const thisid = dialogDescriptions[i].id.replace('dialogDescription','')
+        dialogDescriptions[i].innerHTML = dialogDescriptions[i].dataset.value;
+        } 
+</script>
