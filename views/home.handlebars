@@ -34,60 +34,69 @@
         }
     }
 
-    //test
-
+    // Persist dialog changes
     function contentEditPersist(thing) {
     document.getElementById("dialogDescriptionInput"+thing).value = 
     document.getElementById("dialogDescription"+thing).innerHTML;
     return true
     }
 
-   
-
-
 </script>
 
-<h1>Today</h1>
+<div class="container">
+<h1 class="dayHeading">Today</h1>
     {{#each todayMessages}}
     {{#ifEquals status "uncompleted"}}
-    <ul>
-    <form action="updatetask" method="post" onchange="submit()">
-    <input type="text" name="id" value={{this.id}} hidden="true">
-    <input type="text" name="title" value="{{title}}" onclick="handleTaskClick({{this.id}})">
-    <input type="text" name="description" id="description" value="{{this.description}}" hidden="true">
-    {{#ifEquals daily "on"}}
-    <input type="checkbox" name="daily" id="daily" checked="on" hidden="true">
-    <span>***Daily***</span>
-    {{else}}
-    <input type="checkbox" name="daily" id="daily" hidden="true">
-    {{/ifEquals}}
-    <input type="date" name="duedate" id="duedate" value="{{this.duedate}}">
-    {{#ifEquals activeafter ""}}
-    <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" hidden="true">
-    {{else}}
-    <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}">
-    {{/ifEquals}}
-    </form>
-    <form action="completed" method="post"> 
-    <input type="text" name="id" value={{this.id}} hidden="true">
-    <button type="submit">Complete</button>
-    </form>
-    <button class="descriptionButton" id="descriptionButton{{this.id}}" onClick="handleDescriptionClick({{this.id}})">Description</button>
+    <div class="taskline">
+        <div>
+        <form action="completed" method="post" > 
+        <input type="text" name="id" value={{this.id}} hidden="true">
+        <button type="submit" class="tasklinecompletebutton">
+        <span class="tasklinecompletespan">
+        <i class="fa-regular fa-circle-check"></i>
+        </span>
+        </button>
+        </form>
+        </div>
+    <div>
+    <form action="updatetask" method="post" onchange="submit()" >
+        <input type="text" name="id" value={{this.id}} hidden="true" >
+        <input type="text" name="title" value="{{title}}" onclick="handleTaskClick({{this.id}})" class="tasklinetitle">
+        <input type="text" name="description" id="description" value="{{this.description}}" hidden="true" >
+        <input type="date" name="duedate" id="duedate" value="{{this.duedate}}" class="tasklineduedate">
+        {{#ifEquals activeafter ""}}
+        <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" hidden="true" >
+        {{else}}
+        <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" class="tasklineactiveafter">
+        {{/ifEquals}}
+        {{#ifEquals daily "on"}}
+        <input type="checkbox" name="daily" id="daily" checked="on" hidden="true" >
+        <span class="tasklinedaily">Daily</span>
+        {{else}}
+        <input type="checkbox" name="daily" id="daily" hidden="true">
+        {{/ifEquals}}
+        </form>
+        </div>
+        <div>
+        <button class="descriptionButton" id="descriptionButton{{this.id}}" onClick="handleDescriptionClick({{this.id}})"><span class="taskinlinedescriptionspan"><i class="fa-solid fa-chevron-right"></i></span></button>
+        </div>
+        </div>
+    
+
     <dialog id="{{this.id}}" class="descriptionDialog">
     <button onClick="handleDescriptionClose()">X</button>
-    
     <form  action="updatedialog" method="post" onchange="submit()">
     <h1>{{this.title}}</h1>
     <input type="text" name="id" value={{this.id}} hidden="true">
     <input type="text"  name="description" id="dialogDescriptionInput{{this.id}}" hidden="true">
-    <div id="dialogDescription{{this.id}}" class="dialogDescription" contenteditable onkeyup="contentEditPersist({{this.id}})" data-value="{{this.description}}"></div>
-    <button onclick="submit()">Save Changes</button>
+    <div id="dialogDescription{{this.id}}" class="dialogDescription" contenteditable onkeyup="contentEditPersist({{this.id}})" data-value="{{this.description}}">
+    </div>
     </form>
-
     </dialog>
-    </ul>
-    {{/ifEquals}}
-    {{/each}}
+        {{/ifEquals}}
+        {{/each}}
+
+    
 
 <h1>Upcoming</h1>
     {{#each laterMessages}}
@@ -128,6 +137,8 @@
     <input type="time" name="activeafter" id="activeafter">
     <button type="submit">Submit</button>
 </form>
+
+</div>
 
 <script type="text/javascript">
  // Render HTML in dialog description

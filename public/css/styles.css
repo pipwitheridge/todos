@@ -1,7 +1,53 @@
+.container {
+background-color: aqua;
+}
+
+.dayHeading {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.taskline {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  background-color: pink;
+  line-height: 30px;
+  font-size: 16px;
+}
+
+input {
+  font-size: 16px;
+  border: none;
+}
+
 input::placeholder {
     opacity: 1;
     color: black;
   }
+
+.tasklinecompletebutton, .descriptionButton {
+  background: none;
+  padding: 0px;
+  border: none;
+}
+
+.taskinlinedescriptionspan {
+  font-size: 25px;
+  color: rgb(47, 47, 47);
+}
+
+.taskinlinedescriptionspan:hover {
+  color: rgb(124, 124, 124);
+}
+
+.tasklinecompletespan {
+  font-size: 25px;
+  color: rgb(124, 124, 124);
+}
+
+.tasklinecompletespan:hover {
+  color: rgb(0, 159, 56);
+}
 
 .descriptionDialog {
   width: 50%;
