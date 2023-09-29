@@ -1,5 +1,6 @@
-.container {
-background-color: aqua;
+body {
+  margin-left: 20px;
+  background-color: rgb(241, 241, 241);
 }
 
 .dayHeading {
@@ -7,16 +8,79 @@ background-color: aqua;
 }
 
 .taskline {
+  border-radius: 1px;
+  border-color: rgb(255, 255, 255);
+  border-style: solid;
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  background-color: pink;
-  line-height: 30px;
   font-size: 16px;
+  padding: 10px; 
+  border-radius: 5px;
+  background-color: white;
+  width: 50%;
+  margin-top: 10px;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.selectedtaskline {
+  border-color: rgb(205, 205, 205);
+  border-style: solid;
+}
+
+.dialogtopline {
+display: flex;
+align-items: center;
+}
+
+.dialogclose {
+  color: #909090;
+  position: absolute;
+  right: 30px;
+  top: 10px;
+  font-size: 20px;
+  padding: 10px;
+}
+
+.dialogclose:hover {
+  color: #222222;
+  position: absolute;
+  right: 30px;
+  top: 10px;
+  font-size: 20px;
+}
+
+
+
+.taskline:hover {
+  border-color: rgb(205, 205, 205);
+  border-style: solid;
+}
+
+.tasklineleft {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.tasklinedaily {
+  background-color: rgb(219, 175, 0);
+  color: white;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-radius: 5px;
 }
 
 input {
   font-size: 16px;
+  border: none;
+  outline-color: rgb(219, 175, 0);
+  padding: 10px;
+}
+
+input:focus {
   border: none;
 }
 
@@ -25,15 +89,16 @@ input::placeholder {
     color: black;
   }
 
-.tasklinecompletebutton, .descriptionButton {
+.tasklinecompletebutton {
   background: none;
   padding: 0px;
   border: none;
 }
 
 .taskinlinedescriptionspan {
-  font-size: 25px;
+  font-size: 16px;
   color: rgb(47, 47, 47);
+  vertical-align: middle;
 }
 
 .taskinlinedescriptionspan:hover {
@@ -41,8 +106,11 @@ input::placeholder {
 }
 
 .tasklinecompletespan {
-  font-size: 25px;
+  font-size: 20px;
   color: rgb(124, 124, 124);
+  vertical-align: middle;
+  margin-right: 20px;
+  margin-left: 10px
 }
 
 .tasklinecompletespan:hover {
@@ -50,10 +118,13 @@ input::placeholder {
 }
 
 .descriptionDialog {
-  width: 50%;
+  width: 30%;
   position: fixed;
   top: 0px;
   right: 0px;
-  left: 50%;
+  left: 70%;
   height: 100%;
+  border-color: white;
+  box-shadow: 10px 10px 10px 5px #909090;
+  border-radius: 5px;
 }

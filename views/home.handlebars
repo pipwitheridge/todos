@@ -1,15 +1,76 @@
 <script type="text/javascript">
+    
+    // Global Constants
+    const selectedTasks = []
+    const dialogs = document.getElementsByClassName("descriptionDialog");
 
-    const handleDescriptionClick = function(thisDescription) {
+
+    // Handle click anywhere on the taskline
+    const handleTaskClick = function(thisTaskID) {
+
+        for(let i=0; i < dialogs.length; i++) {
+                if(dialogs[i].open) {
+           
+        handleDescriptionClick(thisTaskID)
+
+         }
+            }  
+           
+    }
+
+    const handleDescriptionClick = function(thisTaskID) {
+
+    
+                
+
+        const duedates = document.getElementsByClassName('tasklineduedate')
+
         const dialogs = document.getElementsByClassName("descriptionDialog");
         for(let i=0; i < dialogs.length; i++) {
             dialogs[i].close();
         };
-        document.getElementById(thisDescription).show();
+        document.getElementById(thisTaskID).show();
         const descriptionButtons = document.getElementsByClassName("descriptionButton");
         for(let i=0; i < descriptionButtons.length; i++) {
             descriptionButtons[i].hidden="true";
         };
+
+        const tasklines = document.getElementsByClassName("taskline");
+
+        if (!event.metaKey) {
+            selectedTasks.splice(0, selectedTasks.length);
+            for(let i=0; i < tasklines.length; i++) {
+            console.log(tasklines[i].id.replace("descriptionButton", ""))
+            console.log(selectedTasks)
+            tasklines[i].classList.remove("selectedtaskline")
+            }
+
+            selectedTasks.push(thisTaskID)
+            for(let i=0; i < tasklines.length; i++) {
+            console.log(tasklines[i].id.replace("descriptionButton", ""))
+            console.log(selectedTasks)
+            if (selectedTasks.includes(parseInt(tasklines[i].id.replace("descriptionButton", "")))) {
+            tasklines[i].classList.add("selectedtaskline")        
+            }
+            }
+
+        }
+
+        if (event.metaKey) {
+        selectedTasks.push(thisTaskID)
+        for(let i=0; i < tasklines.length; i++) {
+        console.log(tasklines[i].id.replace("descriptionButton", ""))
+        console.log(selectedTasks)
+        if (selectedTasks.includes(parseInt(tasklines[i].id.replace("descriptionButton", "")))) {
+            tasklines[i].classList.add("selectedtaskline")      
+        }
+        }
+        }
+
+        document.getElementById("taskinput"+thisTaskID).focus();
+
+       
+
     }
 
     const handleDescriptionClose = function() {
@@ -23,23 +84,18 @@
         };
     }
 
-    const handleTaskClick = function(thisDescription) {
-        const dialogs = document.getElementsByClassName("descriptionDialog");
-        for(let i=0; i < dialogs.length; i++) {
-            if(dialogs[i].open) {
-                handleDescriptionClick(thisDescription)
-            }
-            else {
-            }
-        }
-    }
 
-    // Persist dialog changes
+ // Persist dialog changes
     function contentEditPersist(thing) {
     document.getElementById("dialogDescriptionInput"+thing).value = 
     document.getElementById("dialogDescription"+thing).innerHTML;
     return true
     }
+
+
+   
+
+   
 
 </script>
 
@@ -47,46 +103,51 @@
 <h1 class="dayHeading">Today</h1>
     {{#each todayMessages}}
     {{#ifEquals status "uncompleted"}}
-    <div class="taskline">
-        <div>
-        <form action="completed" method="post" > 
-        <input type="text" name="id" value={{this.id}} hidden="true">
-        <button type="submit" class="tasklinecompletebutton">
-        <span class="tasklinecompletespan">
-        <i class="fa-regular fa-circle-check"></i>
-        </span>
-        </button>
-        </form>
-        </div>
-    <div>
-    <form action="updatetask" method="post" onchange="submit()" >
-        <input type="text" name="id" value={{this.id}} hidden="true" >
-        <input type="text" name="title" value="{{title}}" onclick="handleTaskClick({{this.id}})" class="tasklinetitle">
-        <input type="text" name="description" id="description" value="{{this.description}}" hidden="true" >
-        <input type="date" name="duedate" id="duedate" value="{{this.duedate}}" class="tasklineduedate">
-        {{#ifEquals activeafter ""}}
-        <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" hidden="true" >
-        {{else}}
-        <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" class="tasklineactiveafter">
-        {{/ifEquals}}
-        {{#ifEquals daily "on"}}
-        <input type="checkbox" name="daily" id="daily" checked="on" hidden="true" >
-        <span class="tasklinedaily">Daily</span>
-        {{else}}
-        <input type="checkbox" name="daily" id="daily" hidden="true">
-        {{/ifEquals}}
-        </form>
+    <div class="taskline descriptionButton" id="descriptionButton{{this.id}}" onClick="handleDescriptionClick({{this.id}})">
+        <div class="tasklineleft">
+            <form action="completed" method="post" > 
+            <input type="text" name="id" value={{this.id}} hidden="true">
+            <button type="submit" class="tasklinecompletebutton">
+            <span class="tasklinecompletespan">
+            <i class="fa-regular fa-circle-check"></i>
+            </span>
+            </button>
+            </form>
+            <form action="updatetask" method="post" onchange="submit()">
+            {{#ifEquals daily "on"}}
+            <input type="checkbox" name="daily" id="daily" checked="on" hidden="true" >
+            <span class="tasklinedaily">Daily</span>
+            {{else}}
+            <input type="checkbox" name="daily" id="daily" hidden="true">
+            {{/ifEquals}}
+            <input type="text" name="id" value={{this.id}} hidden="true" >
+            <input type="text" id="taskinput{{this.id}}" name="title" value="{{title}}" onclick="handleTaskClick({{this.id}})" class="tasklinetitle">
+            <input type="text" name="description" id="description" value="{{this.description}}" hidden="true" >
         </div>
         <div>
-        <button class="descriptionButton" id="descriptionButton{{this.id}}" onClick="handleDescriptionClick({{this.id}})"><span class="taskinlinedescriptionspan"><i class="fa-solid fa-chevron-right"></i></span></button>
+            {{#ifEquals activeafter ""}}
+            <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" hidden="true" >
+            {{else}}
+            <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" class="tasklineactiveafter">
+            {{/ifEquals}}
+            <input type="date" name="duedate" id="duedate{{this.id}}" value="{{this.duedate}}" class="tasklineduedate">
+            </form>
         </div>
-        </div>
+    </div>
+</div>
+        
     
 
     <dialog id="{{this.id}}" class="descriptionDialog">
-    <button onClick="handleDescriptionClose()">X</button>
-    <form  action="updatedialog" method="post" onchange="submit()">
+    <div class="dialogclose">
+    <span class="dialogclose" onClick="handleDescriptionClose()"><i class="fa-solid fa-chevron-right"></i></span>
+    </div>
+    <div class="dialogtopline">
+    <div>    
     <h1>{{this.title}}</h1>
+    </div>
+    </div>
+    <form  action="updatedialog" method="post" onchange="submit()">
     <input type="text" name="id" value={{this.id}} hidden="true">
     <input type="text"  name="description" id="dialogDescriptionInput{{this.id}}" hidden="true">
     <div id="dialogDescription{{this.id}}" class="dialogDescription" contenteditable onkeyup="contentEditPersist({{this.id}})" data-value="{{this.description}}">
@@ -122,7 +183,6 @@
     </ul>
     {{/ifEquals}}
     {{/each}}
-
 
 <form action="message" method="post">
     <label for="title">Title</label>
