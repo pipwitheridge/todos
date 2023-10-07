@@ -1,7 +1,105 @@
 body {
-  margin-left: 20px;
+  margin-left: 50px;
+  margin-bottom: 200px;
   background-color: rgb(241, 241, 241);
 }
+
+body, input {
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+}
+
+.headerrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 60%
+}
+
+.addTaskButton {
+font-size: 20px;
+color: #909090;
+}
+
+.addTaskButton:hover {
+  font-size: 20px;
+  color: #00960c;
+  cursor: pointer;
+}
+
+.newtaskfields input {
+  border-radius: 5px;
+  margin-bottom: 30px;
+  width: 300px;
+  display: block;
+  font-size: 16px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+  outline-color: rgb(0, 0, 0);
+  padding: 10px;
+}
+
+.newtaskfields input[type="checkbox"] {
+  font-size: 100px;
+}
+
+.newtaskfields button {
+  margin-top: 10px;
+  background-color: rgb(228, 228, 228);  
+  box-shadow: none;
+  text-shadow: none;
+  outline: none;
+  border-color: white;
+  border-radius: 5px;
+  margin-bottom: 30px;
+  width: 100px;
+  padding: 10px;
+  border-style: solid;
+  font-size: 16px;
+}
+
+.newtaskfields button:hover {
+  background-color: rgb(209, 209, 209);  
+  cursor: pointer;
+}
+
+.dailycheckbox {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  vertical-align: middle;
+  padding-left: 0px;
+  margin-bottom: 24px;
+
+}
+
+.dailycheckbox input {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+}
+
+.dailycheckboxlabel {
+  vertical-align: middle;
+}
+
+.dailycheckboxinputspan {
+height: 20px;
+vertical-align: middle;
+margin-left: 0px;
+justify-content: left;
+padding-left: 10px;
+}
+
+.dailycheckboxinput {
+padding-left: 0px;
+  align-content: left;
+  align-items: left;
+  justify-content: left;
+  width: 10%;
+  padding-left: 0px;
+  }
+
 
 .dayHeading {
   font-family: 'Bebas Neue', sans-serif;
@@ -16,16 +114,33 @@ body {
   padding: 10px; 
   border-radius: 5px;
   background-color: white;
-  width: 50%;
+  width: 60%;
   margin-top: 10px;
   margin-top: 10px;
   align-items: center;
   justify-content: space-between;
 }
 
+.taskline:hover {
+  border-color: rgb(205, 205, 205);
+  border-style: solid;
+  background-color: rgb(220, 220, 220);
+  cursor: pointer;
+
+}
+
 .selectedtaskline {
   border-color: rgb(205, 205, 205);
   border-style: solid;
+  background-color: rgb(229, 229, 229);
+}
+
+.tasklinetitle {
+  width: 350px;
+}
+
+.tasklineactiveafter {
+  width: 110px;
 }
 
 .dialogtopline {
@@ -35,26 +150,14 @@ align-items: center;
 
 .dialogclose {
   color: #909090;
-  position: absolute;
-  right: 30px;
-  top: 10px;
   font-size: 20px;
-  padding: 10px;
+  width: 20px;
 }
 
 .dialogclose:hover {
   color: #222222;
-  position: absolute;
-  right: 30px;
-  top: 10px;
-  font-size: 20px;
-}
+  cursor: pointer;
 
-
-
-.taskline:hover {
-  border-color: rgb(205, 205, 205);
-  border-style: solid;
 }
 
 .tasklineleft {
@@ -76,8 +179,9 @@ align-items: center;
 input {
   font-size: 16px;
   border: none;
-  outline-color: rgb(219, 175, 0);
+  outline-color: white;
   padding: 10px;
+  border-radius: 5px;
 }
 
 input:focus {
@@ -103,6 +207,7 @@ input::placeholder {
 
 .taskinlinedescriptionspan:hover {
   color: rgb(124, 124, 124);
+
 }
 
 .tasklinecompletespan {
@@ -115,16 +220,27 @@ input::placeholder {
 
 .tasklinecompletespan:hover {
   color: rgb(0, 159, 56);
+  cursor: pointer;
+
+}
+
+.dialogDescription {
+  border-color: white;
+  outline-color: white;
 }
 
 .descriptionDialog {
   width: 30%;
+  padding: 20px;
   position: fixed;
+  overflow-y:auto;
+  overflow-x:hidden;
   top: 0px;
+  bottom: 0px;
   right: 0px;
-  left: 70%;
-  height: 100%;
+  line-height: 28px;
   border-color: white;
+  background-color: white;
   box-shadow: 10px 10px 10px 5px #909090;
   border-radius: 5px;
 }

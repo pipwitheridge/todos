@@ -1,136 +1,238 @@
 <script type="text/javascript">
     
-    // Global Constants
-    const selectedTasks = []
-    const dialogs = document.getElementsByClassName("descriptionDialog");
+// Global Constants
+const selectedTasks = []
+const tasklines = document.getElementsByClassName("taskline");
+const dialogs = document.getElementsByClassName("descriptionDialog");
+const duedates = document.getElementsByClassName('tasklineduedate');
+const activeafters = document.getElementsByClassName('tasklineactiveafter');
+const descriptionButtons = document.getElementsByClassName("descriptionButton");
+const dialogDescriptions = document.getElementsByClassName("dialogDescription");
+const thisyear = new Date().getFullYear()
+const thismonth = new Date().getMonth()+1
+const thismonth2digits = thismonth.toString().length===1 ? '0'+thismonth : thismonth
+const thisday = new Date().getDate()
+const thisday2digits = thisday.toString().length===1 ? '0'+thisday : thisday
+const today = thisyear+'-'+thismonth2digits+'-'+thisday2digits
 
-
-    // Handle click anywhere on the taskline
-    const handleTaskClick = function(thisTaskID) {
-
-        for(let i=0; i < dialogs.length; i++) {
-                if(dialogs[i].open) {
-           
-        handleDescriptionClick(thisTaskID)
-
-         }
-            }  
-           
-    }
-
-    const handleDescriptionClick = function(thisTaskID) {
-
-    
-                
-
-        const duedates = document.getElementsByClassName('tasklineduedate')
-
-        const dialogs = document.getElementsByClassName("descriptionDialog");
-        for(let i=0; i < dialogs.length; i++) {
-            dialogs[i].close();
-        };
-        document.getElementById(thisTaskID).show();
-        const descriptionButtons = document.getElementsByClassName("descriptionButton");
-        for(let i=0; i < descriptionButtons.length; i++) {
-            descriptionButtons[i].hidden="true";
-        };
-
-        const tasklines = document.getElementsByClassName("taskline");
-
-        if (!event.metaKey) {
-            selectedTasks.splice(0, selectedTasks.length);
-            for(let i=0; i < tasklines.length; i++) {
-            console.log(tasklines[i].id.replace("descriptionButton", ""))
-            console.log(selectedTasks)
-            tasklines[i].classList.remove("selectedtaskline")
-            }
-
-            selectedTasks.push(thisTaskID)
-            for(let i=0; i < tasklines.length; i++) {
-            console.log(tasklines[i].id.replace("descriptionButton", ""))
-            console.log(selectedTasks)
-            if (selectedTasks.includes(parseInt(tasklines[i].id.replace("descriptionButton", "")))) {
-            tasklines[i].classList.add("selectedtaskline")        
-            }
-            }
-
+// Handle click directly on the taskline 'Title' input
+const handleTaskTitleInputClick = function(thisTaskID) {
+    for(let i=0; i < dialogs.length; i++) {
+        if(dialogs[i].style.display="") {
+            handleDescriptionClick(thisTaskID)
         }
+    }    
+}
 
-        if (event.metaKey) {
-        selectedTasks.push(thisTaskID)
+
+const handleTaskDateInputChange = function(thisTaskID) {
+    const selectedDate = document.getElementById("duedate"+thisTaskID).value
+    localStorage.setItem("selectedDueDate", selectedDate)
+    document.getElementById("selecteddate").value = selectedDate
+    document.getElementById("selecteddatesarray").value = selectedTasks
+    document.getElementById("updatedateform").submit()
+}
+
+
+
+
+
+// Handle click on the taskline anywhere except the 'Title' input
+const handleDescriptionClick = function(thisTaskID) {
+
+    for(let i=0; i < dialogs.length; i++) {
+        dialogs[i].style.display = "none";
+    };
+    document.getElementById("descriptionpane"+thisTaskID).style.display = ""
+    for(let i=0; i < descriptionButtons.length; i++) {
+        descriptionButtons[i].hidden="true";
+    };
+    if (!event.metaKey && !event.shiftKey) {
+        selectedTasks.splice(0, selectedTasks.length);
         for(let i=0; i < tasklines.length; i++) {
-        console.log(tasklines[i].id.replace("descriptionButton", ""))
-        console.log(selectedTasks)
-        if (selectedTasks.includes(parseInt(tasklines[i].id.replace("descriptionButton", "")))) {
-            tasklines[i].classList.add("selectedtaskline")      
+            tasklines[i].classList.remove("selectedtaskline")
         }
+        !selectedTasks.includes(thisTaskID) && selectedTasks.push(thisTaskID);
+        for(let i=0; i < tasklines.length; i++) {
+            if (selectedTasks.includes(parseInt(tasklines[i].id.replace("descriptionButton", "")))) {
+                tasklines[i].classList.add("selectedtaskline");    
+            }
         }
+    }
+    if (event.metaKey) {
+        !selectedTasks.includes(thisTaskID) && selectedTasks.push(thisTaskID);
+        for(let i=0; i < tasklines.length; i++) {
+            if (selectedTasks.includes(parseInt(tasklines[i].id.replace("descriptionButton", "")))) {
+                tasklines[i].classList.add("selectedtaskline")      
+            }
         }
+    }
+    if (event.shiftKey && selectedTasks.length===1) {
+        !selectedTasks.includes(thisTaskID) && selectedTasks.push(thisTaskID);
+        for(let i=0; i < tasklines.length; i++) {
+            tasklines[i].setAttribute('data-index', i)
+        }
+        const t1 = document.getElementById("descriptionButton"+selectedTasks[0]).getAttribute('data-index')
+        const t2 = document.getElementById("descriptionButton"+selectedTasks[1]).getAttribute('data-index')
 
-        document.getElementById("taskinput"+thisTaskID).focus();
+        if(t1 > t2) {
+            console.log('t1 = ' + t1)
+            console.log('t2 = ' + t2)
 
-       
+            for(let i=t2; i <= t1; i++) {
+                tasklines[i].classList.add("selectedtaskline")
+                selectedTasks.push(tasklines[i].id.replace('descriptionButton', ''))
+
+            }
+        }
+        if(t1 < t2) {
+            console.log('t2 = ' + t2)
+            console.log('t1 = ' + t1)
+            for(let i=t1; i <= t2; i++) {
+                tasklines[i].classList.add("selectedtaskline")
+                selectedTasks.push(tasklines[i].id.replace('descriptionButton', ''))
+
+            }
+        }
 
     }
+    localStorage.setItem("selectedTasks", "")
+    localStorage.setItem("selectedTasks", selectedTasks)
+    document.getElementById("taskinput"+thisTaskID).focus();
+}
 
-    const handleDescriptionClose = function() {
-        const dialogs = document.getElementsByClassName("descriptionDialog");
-        for(let i=0; i < dialogs.length; i++) {
-            dialogs[i].close();
-        };
-        const descriptionButtons = document.getElementsByClassName("descriptionButton");
-        for(let i=0; i < descriptionButtons.length; i++) {
-            descriptionButtons[i].hidden="";
-        };
-    }
-
-
- // Persist dialog changes
-    function contentEditPersist(thing) {
-    document.getElementById("dialogDescriptionInput"+thing).value = 
-    document.getElementById("dialogDescription"+thing).innerHTML;
-    return true
-    }
+// Handle click on the close button inside the dialogue window
+const handleDescriptionClose = function() {
+    for(let i=0; i < dialogs.length; i++) {
+        dialogs[i].style.display = "none";
+    };
+    for(let i=0; i < descriptionButtons.length; i++) {
+        descriptionButtons[i].hidden="";
+    };
+}
 
 
-   
+// Persist changes within the dialog window
+const contentEditPersist = function(thisID) {
+        document.getElementById("dialogDescriptionInput"+thisID).value = 
+        document.getElementById("dialogDescription"+thisID).innerHTML;
+}
 
-   
+// Handle blur/edit in description pane
+const descriptionPaneSubmit = function(thisID) {
+    document.getElementById("dialogform"+thisID).submit();
+    document.getElementById("descriptionpane"+thisID).style.display="";
+}
+
+// Open New Task Form
+const openNewTaskForm = function() {
+    document.getElementById("newtaskform").style.display = ""
+}
+
+// Handle Complete Button Click
+const handleCompleteButtonClick = function(thisTaskID) {
+
+document.getElementById("descriptionButton"+thisTaskID).style.transition = "opacity 1s"
+document.getElementById("descriptionpane"+thisTaskID).style.transition = "opacity 1s"
+document.getElementById("descriptionButton"+thisTaskID).style.opacity = 0;
+document.getElementById("descriptionpane"+thisTaskID).style.opacity = 0;
+
+
+setTimeout(() => {
+document.getElementById("completeForm"+thisTaskID).submit()
+}, 1000);
+
+}
+
+// Render HTML in dialog description
+window.onload = function () {
+    console.log('page loadedd')
+    localStorage.setItem("selectedTasks", "")
+    localStorage.setItem("selectedDueDate", "")
+    for (let i=0; i < dialogDescriptions.length; i++) {
+        dialogDescriptions[i].innerHTML = dialogDescriptions[i].dataset.value;
+    } 
+     for (let i=0; i < duedates.length; i++) {
+        console.log(duedates[i].value)
+        console.log('today' + today)
+        if(duedates[i].value === today) {
+            duedates[i].style.color = "rgb(0, 150, 70)";
+        }
+        if(duedates[i].value < today) {
+            duedates[i].style.color = "rgb(255, 100, 100)";
+        }
+        if(duedates[i].value > today) {
+            duedates[i].style.color = "rgb(120, 120, 120)";
+        }
+    } 
+    for (let i=0; i < activeafters.length; i++) {
+        const aaArray = activeafters[i].value.split(':')
+        const aaHours = aaArray[0]
+        const aaMins = aaArray[1]
+        const nowHours = new Date().getHours()
+        const nowMins = new Date().getMinutes()
+        const aaID = activeafters[i].id.replace('activeafter', '')
+        const thisDueDate = document.getElementById('duedate'+aaID)
+        const dueToday = thisDueDate.value === today
+        console.log(dueToday)
+
+        if(dueToday && aaHours <= nowHours) {
+            activeafters[i].style.color = "rgb(0, 150, 70)";
+        }
+        else{
+            activeafters[i].style.color = "rgb(200, 200, 200)";
+        }
+    } 
+
+} 
 
 </script>
 
+
 <div class="container">
-<h1 class="dayHeading">Today</h1>
-    {{#each todayMessages}}
+    <div class="headerrow">
+        <div>
+            <h1 class="dayHeading" id="dayHeading">To Do</h1>
+        </div>
+    <div>
+        <span class="addTaskButton" onclick="openNewTaskForm()">
+            <i class="fa-regular fa-square-plus"></i></span>
+        </div>
+    </div>
+    <form action="updatedate" method="post" id="updatedateform" hidden="true">
+    <input type="text" name="selecteddatesarray" id="selecteddatesarray"/>
+    <input type="text" name="selecteddate" id="selecteddate"/>
+    </form>
+    {{#each messages}}
     {{#ifEquals status "uncompleted"}}
     <div class="taskline descriptionButton" id="descriptionButton{{this.id}}" onClick="handleDescriptionClick({{this.id}})">
         <div class="tasklineleft">
-            <form action="completed" method="post" > 
+            <form action="completed" method="post" id="completeForm{{this.id}}"> 
             <input type="text" name="id" value={{this.id}} hidden="true">
-            <button type="submit" class="tasklinecompletebutton">
+            <span onclick="handleCompleteButtonClick({{this.id}})" class="tasklinecompletebutton">
             <span class="tasklinecompletespan">
             <i class="fa-regular fa-circle-check"></i>
             </span>
-            </button>
+            </span>
             </form>
-            <form action="updatetask" method="post" onchange="submit()">
+            <form action="updatetask" method="post" id="updateform{{this.id}}">
             {{#ifEquals daily "on"}}
-            <input type="checkbox" name="daily" id="daily" checked="on" hidden="true" >
+            <input type="checkbox" name="daily" id="daily" checked="on" hidden="true">
             <span class="tasklinedaily">Daily</span>
             {{else}}
             <input type="checkbox" name="daily" id="daily" hidden="true">
             {{/ifEquals}}
             <input type="text" name="id" value={{this.id}} hidden="true" >
-            <input type="text" id="taskinput{{this.id}}" name="title" value="{{title}}" onclick="handleTaskClick({{this.id}})" class="tasklinetitle">
+            <input type="text" id="taskinput{{this.id}}" name="title" value="{{title}}" onclick="handleTaskTitleInputClick({{this.id}})" onchange="submit()" class="tasklinetitle">
             <input type="text" name="description" id="description" value="{{this.description}}" hidden="true" >
         </div>
         <div>
             {{#ifEquals activeafter ""}}
-            <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" hidden="true" >
+            <input type="time" name="2activeafter" id="2activeafter{{this.id}}" value="{{this.activeafter}}" hidden="true" >
             {{else}}
-            <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}" class="tasklineactiveafter">
+            <input type="time" name="activeafter" id="activeafter{{this.id}}" value="{{this.activeafter}}" class="tasklineactiveafter" onchange="submit()">
             {{/ifEquals}}
-            <input type="date" name="duedate" id="duedate{{this.id}}" value="{{this.duedate}}" class="tasklineduedate">
+            <input type="date" name="duedate" id="duedate{{this.id}}" value="{{this.duedate}}" class="tasklineduedate" onchange="handleTaskDateInputChange({{this.id}})">
             </form>
         </div>
     </div>
@@ -138,7 +240,7 @@
         
     
 
-    <dialog id="{{this.id}}" class="descriptionDialog">
+    <div id="descriptionpane{{this.id}}" class="descriptionDialog" style="display: none">
     <div class="dialogclose">
     <span class="dialogclose" onClick="handleDescriptionClose()"><i class="fa-solid fa-chevron-right"></i></span>
     </div>
@@ -147,64 +249,38 @@
     <h1>{{this.title}}</h1>
     </div>
     </div>
-    <form  action="updatedialog" method="post" onchange="submit()">
-    <input type="text" name="id" value={{this.id}} hidden="true">
-    <input type="text"  name="description" id="dialogDescriptionInput{{this.id}}" hidden="true">
-    <div id="dialogDescription{{this.id}}" class="dialogDescription" contenteditable onkeyup="contentEditPersist({{this.id}})" data-value="{{this.description}}">
+    <form action="updatedialog" method="post" id="dialogform{{this.id}}">
+    <input type="text" name="id" value="{{this.id}}" hidden="true">
+    <input type="text" name="description" value="{{this.description}}" id="dialogDescriptionInput{{this.id}}" hidden="true">
+    <div id="dialogDescription{{this.id}}" class="dialogDescription" contenteditable onkeyup="contentEditPersist({{this.id}})" onblur="descriptionPaneSubmit({{this.id}})" data-value="{{this.description}}">
     </div>
     </form>
-    </dialog>
+    </div>
         {{/ifEquals}}
         {{/each}}
 
-    
 
-<h1>Upcoming</h1>
-    {{#each laterMessages}}
-    {{#ifEquals status "uncompleted"}}
-    <ul>
-    <form action="updatetask" method="post" onchange="submit()">
-    <input type="text" name="id" value={{this.id}} hidden="true">
-    <input type="text" name="title" value="{{title}}">
-    <input type="text" name="description" id="description" value="{{this.description}}">
-    {{#ifEquals daily "on"}}
-    <input type="checkbox" name="daily" id="daily" checked="on">
-    {{else}}
-    <input type="checkbox" name="daily" id="daily">
-    {{/ifEquals}}
-    <input type="date" name="duedate" id="duedate" value="{{this.duedate}}">
-    <input type="time" name="activeafter" id="activeafter" value="{{this.activeafter}}">
-    </form>
-
-    <form action="completed" method="post"> 
-    <input type="text" name="id" value={{this.id}} hidden="true">
-    <button type="submit">Complete</button>
-    </form>
-    </ul>
-    {{/ifEquals}}
-    {{/each}}
-
+<div id="newtaskform" class="descriptionDialog" style="display: none">
 <form action="message" method="post">
+    <div class="newtaskfields">
+    <div><h1>New Task</h1></div>
     <label for="title">Title</label>
     <input required="true" oninvalid="this.setCustomValidity('Titles are required.')" type="text" name="title" id="title">
     <label for="description">Description</label>
     <input type="text" name="description" id="description">
-    <label for="daily">Daily</label>
-    <input type="checkbox" name="daily" id="daily">
+    <div class="dailycheckbox">
+    <label class="dailycheckboxlabel" for="daily">Daily</label>
+    <span class="dailycheckboxinputspan">
+    <input class="dailycheckboxinput" type="checkbox" name="daily" id="daily">
+    </span>
+    </div>
     <label for="duedate">Due</label>
     <input type="date" name="duedate" id="duedate">
     <label for="activeafter">Active After</label>
     <input type="time" name="activeafter" id="activeafter">
     <button type="submit">Submit</button>
+    </div>
 </form>
-
 </div>
 
-<script type="text/javascript">
- // Render HTML in dialog description
-    const dialogDescriptions = document.getElementsByClassName("dialogDescription");
-        for (let i=0; i < dialogDescriptions.length; i++) {
-        const thisid = dialogDescriptions[i].id.replace('dialogDescription','')
-        dialogDescriptions[i].innerHTML = dialogDescriptions[i].dataset.value;
-        } 
-</script>
+</div>

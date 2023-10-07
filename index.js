@@ -2,6 +2,7 @@ import express from 'express';
 import { create, engine } from 'express-handlebars';
 import sqlite3 from 'sqlite3'
 import { open } from 'sqlite'
+import fetch from 'node-fetch';
 
 // Initialise sqlite db
 const dbPromise = open({
@@ -29,13 +30,9 @@ app.use(express.urlencoded({extended: false}))
 
 app.get('/', async (req, res) => {
     const db = await dbPromise
-    const messages = await db.all('SELECT * FROM Message ORDER BY activeafter;');
-    const todayMessages = await db.all('SELECT * FROM Message WHERE duedate<="2023-09-26" ORDER BY duedate');
-    const laterMessages = await db.all('SELECT * FROM Message WHERE duedate>"2023-09-26" ORDER BY duedate');
+    const messages = await db.all('SELECT * FROM Message ORDER BY duedate, activeafter, daily, title;');
     res.render('home', {
-        todayMessages,
         messages,
-        laterMessages
     });
 });
 
@@ -47,7 +44,7 @@ app.post('/message', async (req, res) => {
     const initStatus = "uncompleted"
     const daily = req.body.daily
     const thisyear = new Date().getFullYear()
-    const thismonth = new Date().getMonth()
+    const thismonth = new Date().getMonth()+1
     const thismonth2digits = thismonth.toString().length===1 ? '0'+thismonth : thismonth
     const thisday = new Date().getDate()
     const thisday2digits = thisday.toString().length===1 ? '0'+thisday : thisday
@@ -78,6 +75,19 @@ app.post('/updatetask', async (req, res) => {
     res.redirect('/')
 });
 
+
+// Update date
+app.post('/updatedate', async (req, res) => {   
+      const ids = req.body.selecteddatesarray.split(",")
+      const selectedDate = req.body.selecteddate;
+    const db = await dbPromise
+    for (let i=0; i < ids.length; i++) {
+    await db.run('UPDATE Message SET (duedate) = (?) WHERE id = (?);', selectedDate, ids[i])
+    }
+    res.redirect('/')
+});
+
+
 // Update task from dialogue pane
 app.post('/updatedialog', async (req, res) => {
     const db = await dbPromise
@@ -95,7 +105,6 @@ app.post('/completed', async (req, res) => {
     await db.run('UPDATE Message SET status = "completed" WHERE id = (?);', messageID)
     res.redirect('/')
 });
-
 
 // Setup CSS
 app.use(express.static('public'))
